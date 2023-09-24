@@ -12,8 +12,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "convert-csv-to-json": "^2.0.0",
+    "lightweight-charts": "^4.0.1",
     "pinia": "^2.1.6",
     "sass": "^1.67.0",
+    "technicalindicators": "^3.1.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },

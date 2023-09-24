@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import WelcomeItem from './WelcomeItem.vue'
-import BreadcrumbComponent, { type ItemDefinition } from './splash-components/breadcrumb/BreadcrumbComponent.vue';
-import ColorDefinition from './splash-components/breadcrumb/BreadcrumbComponent.vue';
-import DocumentationIcon from './icons/IconDocumentation.vue'
+import ChartTradingView from './splash-components/breadcrumb/ChartTradingView.vue';
 import { ref } from 'vue';
 
 import { useCounterStore } from '@/stores/counter';
@@ -19,55 +17,9 @@ const getHighNum = () => {
   return high + 1;
 }
 
-const items: ItemDefinition[] = [
-  {
-    name: "Home",
-    url: "#",
-  },
-  {
-    name: "Continental",
-    url: "#",
-  },
-  {
-    name: "PROJET_001",
-    url: "#",
-  },
-  {
-    name: "LOT1",
-    url: "#",
-    active: true,
-  },
-];
+
 </script>
 
 <template>
-  <BreadcrumbComponent
-    class="breadcrumb"
-    :items=items>
-    </BreadcrumbComponent>
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
-
-    Méthode 1
-    <div 
-      v-for="counter in counterStore.counters"
-      :key="counter"
-      >
-      {{ counter }}
-    </div>
-
-    <!--{{ counterStore.getterCounter }}-->
-    <button @click="counterStore.add(getHighNum())"> add </button>
-
-    Méthode 2
-    <div 
-      v-for="counter in counters"
-      :key="counter"
-      >
-      {{ counter }}
-    </div>
-  </WelcomeItem>
+  <ChartTradingView></ChartTradingView>
 </template>
