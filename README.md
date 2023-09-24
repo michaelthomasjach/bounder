@@ -1,2 +1,2 @@
 # bounder
-bounder
+A trading algorithm
