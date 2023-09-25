@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import { createChart } from 'lightweight-charts';
-import * as stock_data from "./stock.js";
-import {smaMultilinesIndicator} from "./sma-multilines-indicators.ts";
+import * as stock_data from "../data_test/stock.js";
+import {smaMultilinesIndicator} from "../indicators/sma-multilines-indicators.ts";
 
 let chart: any;
 let series: any;
@@ -117,3 +117,4 @@ export interface ILineSerie {
   background-color: red;
 }
 </style>
+../../../indicators/sma-multilines-indicators.js
