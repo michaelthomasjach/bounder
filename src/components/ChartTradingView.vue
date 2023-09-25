@@ -40,6 +40,8 @@ const props = defineProps({
 	},
 });
 
+
+
 onMounted(() => {
   const values: any = stock_data.stock;
   console.log(values)
@@ -66,7 +68,15 @@ onMounted(() => {
 
 
   candlestickSeries.setData(values);
-  chart.timeScale().fitContent();
+  // display the whole data
+  // chart.timeScale().fitContent();
+
+  const startTime = '2020-01-01'; // Heure de début
+  const endTime = '2023-09-01';   // Heure de fin
+  chart.timeScale().setVisibleRange({
+    from: startTime,
+    to: endTime,
+  });
 
 
   smaMultilinesIndicator(values, chart);
@@ -94,16 +104,20 @@ const resizeHandler = (container: any) => {
 };
 
 
-
-
-  
-
-
-
 export interface ILineSerie {
   value: number;
   time: String;
 }
+
+
+// Gérez le redimensionnement de la fenêtre en utilisant le gestionnaire d'événements "resize"
+window.addEventListener('resize', () => {
+  // Appelez la méthode "resize" de la charte pour ajuster la taille du graphique
+  chart.resize(
+    window.innerWidth, // Nouvelle largeur du graphique
+    window.innerHeight // Nouvelle hauteur du graphique
+  );
+});
 
 </script>
 
