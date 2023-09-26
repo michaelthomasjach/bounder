@@ -50,6 +50,14 @@ onMounted(() => {
   const values: any = stock_data.stock;
   console.log(values)
 
+  const timeScaleOptions = {
+    rightOffset: 0, // Décalage à droite de l'échelle de temps
+    barSpacing: 3,   // Espacement entre les barres de temps
+    fixLeftEdge: false, // Fixe le bord gauche de l'échelle de temps (empêche l'échelle de temps d'aller au dela de la zone de temps des valeurs fournies)
+    fixRightEdge: false, // Fixe le bord gauche de l'échelle de temps (empêche l'échelle de temps d'aller au dela de la zone de temps des valeurs fournies)
+    lockVisibleTimeRangeOnResize: true, // Verrouille la plage de temps visible lors du redimensionnement
+    rightBarStaysOnScroll: true, // Laisse la dernière barre à droite lors du défilement
+  };
 
   //chart = createChart(chartContainer.value, props.chartOptions);
   chart = createChart(chartContainer.value, 
@@ -62,6 +70,9 @@ onMounted(() => {
           vertLines: { color: '#444' },
           horzLines: { color: '#444' },
       },
+      timeScale: timeScaleOptions, // Utilisez les options de l'échelle de temps ici
+      autoSize: true,
+
   });
 
   chart1 = createChart(chartContainer1.value, 
@@ -74,6 +85,9 @@ onMounted(() => {
           vertLines: { color: '#444' },
           horzLines: { color: '#444' },
       },
+      timeScale: timeScaleOptions, // Utilisez les options de l'échelle de temps ici
+      autoSize: true,
+
   });
 
  
@@ -91,6 +105,37 @@ onMounted(() => {
 
   candlestickSeries.setData(values);
   candlestickSeries1.setData(values);
+
+
+  chart.subscribeCrosshairMove((range: any) => {
+    const timeRange = chart.timeScale().getVisibleRange();
+    const timeRangeLogical = chart.timeScale().getVisibleLogicalRange();
+    //console.log("RANGE :", range)
+    const rightOffset = chart.timeScale();
+    console.log("timeRangeLogical =", timeRangeLogical);
+
+    /*
+    chart1.timeScale().setVisibleRange({
+        from: timeRange.from, // - (chart1.timeScale().width() / 2),
+        to: timeRange.to, // + (chart1.timeScale().width() / 2),
+    });*/    
+    chart1.timeScale().setVisibleLogicalRange({
+        from: timeRangeLogical.from, // - (chart1.timeScale().width() / 2),
+        to: timeRangeLogical.to, // + (chart1.timeScale().width() / 2),
+    });
+  });
+
+
+  function myVisibleTimeRangeChangeHandler(newVisibleTimeRange: any) {
+    console.log("newVisibleTimeRange :", newVisibleTimeRange)
+    if (newVisibleTimeRange === null) {
+        // handle null
+    }
+
+    // handle new logical range
+}
+
+chart.timeScale().subscribeVisibleTimeRangeChange(myVisibleTimeRangeChangeHandler);
 
   // display the whole data
   // chart.timeScale().fitContent();
@@ -131,26 +176,13 @@ onMounted(() => {
   }
   candlestickSeries.setMarkers(markers);
 
-  /*
-  const orderAnnotation = chart.createShapeAnnotation({
-    time: '2023-04-24T11:00:00', // Heure de l'ordre d'achat
-    price: 6800, // Prix de l'ordre d'achat
-    color: 'green', // Couleur de l'annotation
-    shape: 'arrowUp', // Forme de l'annotation (flèche vers le haut)
-    text: 'Achat', // Texte de l'annotation
-    textFontSize: 20, // Taille de police du texte
-  });
 
-  chart.addAnnotation(orderAnnotation);
-  */
-
-
-  const startTime = '2020-01-01'; // Heure de début
-  const endTime = '2023-09-01';   // Heure de fin
   chart.timeScale().setVisibleRange({
-    from: startTime,
-    to: endTime,
+    from: values[0].time,
+    to: values[values.length-1].time,
   });
+
+  
 
 
   smaMultilinesIndicator(values, chart);
@@ -169,6 +201,10 @@ onUnmounted(() => {
   window.removeEventListener('resize', resizeHandler);
 });
 
+const toTimestamp = (strDate: string) => {
+   var datum = Date.parse(strDate);
+   return datum/1000;
+}
 
 // Auto resizes the chart when the browser window is resized.
 const resizeHandler = (container: any) => {
@@ -202,13 +238,11 @@ window.addEventListener('resize', () => {
   position: relative;
   width: 100%;
   height: 75%;
-  background-color: red;
 }
 .lw-chart-1 {
   position: relative;
   width: 100%;
   height: 25%;
-  background-color: red;
 }
 </style>
 ../../../indicators/sma-multilines-indicators.js
