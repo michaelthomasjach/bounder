@@ -110,10 +110,6 @@ onMounted(() => {
   chart.subscribeCrosshairMove((range: any) => {
     const timeRange = chart.timeScale().getVisibleRange();
     const timeRangeLogical = chart.timeScale().getVisibleLogicalRange();
-    //console.log("RANGE :", range)
-    const rightOffset = chart.timeScale();
-    console.log("timeRangeLogical =", timeRangeLogical);
-
     /*
     chart1.timeScale().setVisibleRange({
         from: timeRange.from, // - (chart1.timeScale().width() / 2),
@@ -124,18 +120,6 @@ onMounted(() => {
         to: timeRangeLogical.to, // + (chart1.timeScale().width() / 2),
     });
   });
-
-
-  function myVisibleTimeRangeChangeHandler(newVisibleTimeRange: any) {
-    console.log("newVisibleTimeRange :", newVisibleTimeRange)
-    if (newVisibleTimeRange === null) {
-        // handle null
-    }
-
-    // handle new logical range
-}
-
-chart.timeScale().subscribeVisibleTimeRangeChange(myVisibleTimeRangeChangeHandler);
 
   // display the whole data
   // chart.timeScale().fitContent();
