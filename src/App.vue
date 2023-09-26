@@ -11,6 +11,7 @@ import HelloWorld from './components/HelloWorld.vue'
 #app {
   position: relative;
   display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100vh;
   background-color: red;
