@@ -102,11 +102,36 @@ onMounted(() => {
     wickUpColor: '#26a69a', wickDownColor: '#ef5350',
   });
 
+  const priceLine = candlestickSeries.createPriceLine({ price: 6000.0 });
 
+
+  // Dessiner une ligne oblique
+  const lineSeries = chart.addLineSeries({
+    lastValueVisible: false
+  });
+  const lineSeries1 = chart.addLineSeries({
+    lastValueVisible: false
+  });
+
+  var tldata = [];
+  tldata.push({
+    time: values[values.length - 1000].time,
+    value: values[values.length - 1000].close
+  });
+  tldata.push({
+    time: values[values.length - 1].time,
+    value: values[values.length - 1].close
+  });
+  lineSeries.setData(tldata);
+
+
+
+  // Afficher les valeurs sur le graphique
   candlestickSeries.setData(values);
   candlestickSeries1.setData(values);
 
 
+  // S'abonner aux events du graphiques
   chart.subscribeCrosshairMove((range: any) => {
     const timeRange = chart.timeScale().getVisibleRange();
     const timeRangeLogical = chart.timeScale().getVisibleLogicalRange();
@@ -229,4 +254,3 @@ window.addEventListener('resize', () => {
   height: 25%;
 }
 </style>
-../../../indicators/sma-multilines-indicators.js
