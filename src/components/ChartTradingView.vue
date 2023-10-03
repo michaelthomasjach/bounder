@@ -7,8 +7,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import { createChart } from 'lightweight-charts';
-import * as stock_data from "@/data_test/stock.js";
 import {smaMultilinesIndicator} from "@/indicators/sma-multilines-indicators.ts";
+import axios from "axios";
 
 let chart: any;
 let chart1: any;
@@ -46,9 +46,9 @@ const props = defineProps({
 
 
 
-onMounted(() => {
-  const values: any = stock_data.stock;
-  console.log(values)
+onMounted(async () => {
+  const stock_data: any = await axios.get("http://localhost:3000/data");
+  const values: any = stock_data.data;
 
   const timeScaleOptions = {
     rightOffset: 0, // Décalage à droite de l'échelle de temps
