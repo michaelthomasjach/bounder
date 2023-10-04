@@ -96,16 +96,168 @@ onMounted(async () => {
   const candlestickSeries = chart.addCandlestickSeries({
     upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
     wickUpColor: '#26a69a', wickDownColor: '#ef5350',
+    priceLineVisible: false
   });
+  
   const candlestickSeries1 = chart1.addCandlestickSeries({
     upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
     wickUpColor: '#26a69a', wickDownColor: '#ef5350',
+    priceLineVisible: false
   });
+
+
+  // add histogram series
+  // https://www.youtube.com/watch?v=2nxj4aLBhgo&ab_channel=DeKay
+  //6:41
+  chart.addHistogramSeries({
+
+  })
+  
+  const sma_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
+  const sma_data   = values
+    .filter((d: any) => d.sma)
+    .map((d: any) => ({time: d.time, value: d.sma}));
+  sma_series.setData(sma_data);
+
+  const ema_series = chart.addLineSeries({ color: "green", lineWidth: 2, priceLineVisible: false});
+  const ema_data   = values
+    .filter((d: any) => d.ema)
+    .map((d: any) => ({time: d.time, value: d.ema}));
+  ema_series.setData(ema_data);
 
   const priceLine = candlestickSeries.createPriceLine({ price: 6000.0 });
 
 
+
+  // Afficher les valeurs sur le graphique
+  candlestickSeries.setData(values);
+  candlestickSeries1.setData(values);
+
+
+  // S'abonner aux events du graphiques
+  chart.subscribeCrosshairMove((range: any) => {
+    const timeRange = chart.timeScale().getVisibleRange();
+    const timeRangeLogical = chart.timeScale().getVisibleLogicalRange();
+    
+    chart1.timeScale().setVisibleRange({
+        from: timeRange.from, // - (chart1.timeScale().width() / 2),
+        to: timeRange.to, // + (chart1.timeScale().width() / 2),
+    }); 
+    chart1.timeScale().setVisibleLogicalRange({
+        from: timeRangeLogical.from, // - (chart1.timeScale().width() / 2),
+        to: timeRangeLogical.to, // + (chart1.timeScale().width() / 2),
+    });
+  });
+
+  chart1.subscribeCrosshairMove((range: any) => {
+    const timeRange = chart1.timeScale().getVisibleRange();
+    const timeRangeLogical = chart1.timeScale().getVisibleLogicalRange();
+    
+    chart.timeScale().setVisibleRange({
+        from: timeRange.from, // - (chart1.timeScale().width() / 2),
+        to: timeRange.to, // + (chart1.timeScale().width() / 2),
+    }); 
+    chart.timeScale().setVisibleLogicalRange({
+        from: timeRangeLogical.from, // - (chart1.timeScale().width() / 2),
+        to: timeRangeLogical.to, // + (chart1.timeScale().width() / 2),
+    });
+  });
+/*
+  candlestickSeries.setMarkers([{
+        time: values[values.length - 100].time,
+        position: "aboveBar",
+        color: "red",
+        shape: "arrowDown",
+        text: "Sell @"
+    }]);
+*/
+const markers: any[] = values
+  .filter((d: any) => d.long || d.short)
+  .map((d: any, i: number) => {
+    const marker = d.long
+    ? {
+      time: d.time,
+      close: d.close,
+      position: "belowBar",
+      color: "green",
+      shape: "arrowUp",
+      text: "LONG @ " + i,// + Math.floor(d.low),
+      id: i,
+      type: "long"
+    }
+    : {
+      time: d.time,
+      close: d.close,
+      position: "aboveBar",
+      color: "red",
+      shape: "arrowDown",
+      text: "SHORT @ " + i,// + Math.floor(d.high),
+      id: i,
+      type: "short"
+    }
+    return marker;
+  });
+candlestickSeries.setMarkers(markers);
+    
+
+// Créez un tableau pour stocker les associations long/short
+const associations: any[] = [];
+let currentLong: any = null;
+let currentShort: any = null;
+markers.forEach((item: any) => {
+  if (item.type === 'long') {
+    if (currentShort) {
+      // Si une position short est ouverte, associez-la au long actuel
+      associations.push({ long: item, short: currentShort });
+      currentShort = null; // Réinitialisez la position short
+    } else {
+      // Mettez à jour la position long actuelle
+      currentLong = item;
+    }
+  } else if (item.type === 'short') {
+    if (currentLong) {
+      // Si une position long est ouverte, associez-la au short actuel
+      associations.push({ long: currentLong, short: item });
+      currentLong = null; // Réinitialisez la position long
+    } else {
+      // Mettez à jour la position short actuelle
+      currentShort = item;
+    }
+  }
+});
+
+// Affichez les associations long/short
+console.log("associations");
+console.log(associations);
+
+
+
+const lines: any[]   = associations
+  .map((d: any) => {
+    const line = [
+      {
+        time: d.long.time,
+        value: d.long.close
+      },
+      {
+        time: d.short.time,
+        value: d.short.close
+      },
+    ];
+    line.sort(compareByDate);
+    return line;
+  });
+
+  associations.forEach((association: any, index: number) => {
+    const lineSeries = chart.addLineSeries({ lastValueVisible: false, color: "yellow", lineWidth: 5, priceLineVisible: false});
+    lineSeries.setData(lines[index]);
+  })
+  
+  console.log(lines);
+  //lineSeries.setData(lines[101]);
+
   // Dessiner une ligne oblique
+  /*
   const lineSeries = chart.addLineSeries({
     lastValueVisible: false
   });
@@ -123,68 +275,7 @@ onMounted(async () => {
     value: values[values.length - 1].close
   });
   lineSeries.setData(tldata);
-
-
-
-  // Afficher les valeurs sur le graphique
-  candlestickSeries.setData(values);
-  candlestickSeries1.setData(values);
-
-
-  // S'abonner aux events du graphiques
-  chart.subscribeCrosshairMove((range: any) => {
-    const timeRange = chart.timeScale().getVisibleRange();
-    const timeRangeLogical = chart.timeScale().getVisibleLogicalRange();
-    /*
-    chart1.timeScale().setVisibleRange({
-        from: timeRange.from, // - (chart1.timeScale().width() / 2),
-        to: timeRange.to, // + (chart1.timeScale().width() / 2),
-    });*/    
-    chart1.timeScale().setVisibleLogicalRange({
-        from: timeRangeLogical.from, // - (chart1.timeScale().width() / 2),
-        to: timeRangeLogical.to, // + (chart1.timeScale().width() / 2),
-    });
-  });
-
-  // display the whole data
-  // chart.timeScale().fitContent();
-
-  const markers = [ ];
-  // determining the dates for the 'buy' and 'sell' markers added below.
-  const datesForMarkers = [
-    values[values.length - 150], 
-    values[values.length - 100],
-    values[values.length - 39], 
-    values[values.length - 19]
-  ];
-  let indexOfMinPrice = 0;
-  for (let i = 1; i < datesForMarkers.length; i++) {
-    if (datesForMarkers[i].high < datesForMarkers[indexOfMinPrice].high) {
-      indexOfMinPrice = i;
-    }
-  }
-
-  for (let i = 0; i < datesForMarkers.length; i++) {
-    if (i !== indexOfMinPrice) {
-      markers.push({
-        time: datesForMarkers[i].time,
-        position: 'aboveBar',
-        color: '#e91e63',
-        shape: 'arrowDown',
-        text: 'Sell @ ' + Math.floor(datesForMarkers[i].high),
-      });
-    } else {
-      markers.push({
-        time: datesForMarkers[i].time,
-        position: 'belowBar',
-        color: '#2196F3',
-        shape: 'arrowUp',
-        text: 'Buy @ ' + Math.floor(datesForMarkers[i].low),
-      });
-    }
-  }
-  candlestickSeries.setMarkers(markers);
-
+  */
 
   chart.timeScale().setVisibleRange({
     from: values[0].time,
@@ -192,11 +283,7 @@ onMounted(async () => {
   });
 
   
-
-
-  smaMultilinesIndicator(values, chart);
-  
-
+  //smaMultilinesIndicator(values, chart);
 });
 
 onUnmounted(() => {
@@ -213,6 +300,22 @@ onUnmounted(() => {
 const toTimestamp = (strDate: string) => {
    var datum = Date.parse(strDate);
    return datum/1000;
+}
+
+
+const compareByDate = (a: any, b: any) => {
+  // Convertissez les dates en objets Date pour comparer
+  const dateA = new Date(a.time.year, a.time.month - 1, a.time.day);
+  const dateB = new Date(b.time.year, b.time.month - 1, b.time.day);
+
+  // Comparez les dates
+  if (dateA < dateB) {
+    return -1;
+  }
+  if (dateA > dateB) {
+    return 1;
+  }
+  return 0;
 }
 
 // Auto resizes the chart when the browser window is resized.
