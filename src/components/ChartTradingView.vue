@@ -104,14 +104,6 @@ onMounted(async () => {
     wickUpColor: '#26a69a', wickDownColor: '#ef5350',
     priceLineVisible: false
   });
-
-
-  // add histogram series
-  // https://www.youtube.com/watch?v=2nxj4aLBhgo&ab_channel=DeKay
-  //6:41
-  chart.addHistogramSeries({
-
-  })
   
   const sma_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
   const sma_data   = values
@@ -171,6 +163,10 @@ onMounted(async () => {
         text: "Sell @"
     }]);
 */
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 const markers: any[] = values
   .filter((d: any) => d.long || d.short)
   .map((d: any, i: number) => {
@@ -226,10 +222,6 @@ markers.forEach((item: any) => {
   }
 });
 
-// Affichez les associations long/short
-console.log("associations");
-console.log(associations);
-
 
 
 const lines: any[]   = associations
@@ -248,12 +240,67 @@ const lines: any[]   = associations
     return line;
   });
 
-  associations.forEach((association: any, index: number) => {
+  lines.forEach((line: any, index: number) => {
     const lineSeries = chart.addLineSeries({ lastValueVisible: false, color: "yellow", lineWidth: 5, priceLineVisible: false});
-    lineSeries.setData(lines[index]);
+    lineSeries.setData(line);
   })
   
+  // Affichez les associations long/short
+  console.log("associations");
   console.log(lines);
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+  // add histogram series
+  // https://www.youtube.com/watch?v=2nxj4aLBhgo&ab_channel=DeKay
+  //6:41
+  const histogramSeries = chart.addHistogramSeries({
+    priceScaleId: "cpcid1", // Échelle des prix à utiliser (par exemple, "right" pour l'axe de droite)
+    base: 1, // Niveau de base pour les histogrammes
+    priceLineVisible: false,
+  });
+
+  const conditionalBackgroundData = values.map((d: any, i: number) => {
+    return i < 8000
+    ? { time: d.time, value: 0, color: "rgba(255, 0, 0, 0.05)"}
+    : i < 8500
+      ? { time: d.time, value: 0, color: "rgba(0, 255, 0, 0.05)" }
+      : { time: d.time, value: 0, color: "rgba(0, 255, 0, 0)" }
+  })
+  
+
+  histogramSeries.setData(conditionalBackgroundData);
+
+  chart
+  .priceScale("cpcid1")
+  .applyOptions({
+    scaleMargin: {
+      bottom: 0, 
+      top: 0,
+      priceLineVisible: false
+    }
+  });
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
   //lineSeries.setData(lines[101]);
 
   // Dessiner une ligne oblique
