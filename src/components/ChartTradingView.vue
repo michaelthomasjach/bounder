@@ -49,6 +49,7 @@ const props = defineProps({
 onMounted(async () => {
   const stock_data: any = await axios.get("http://localhost:3000/data");
   const values: any = stock_data.data;
+  console.log("VALUES :", values)
 
   const timeScaleOptions = {
     rightOffset: 0, // Décalage à droite de l'échelle de temps
@@ -174,6 +175,8 @@ const markers: any[] = values
     ? {
       time: d.time,
       close: d.close,
+      stop: d.stop,
+      take_profit: d.take_profit,
       position: "belowBar",
       color: "green",
       shape: "arrowUp",
@@ -184,6 +187,8 @@ const markers: any[] = values
     : {
       time: d.time,
       close: d.close,
+      stop: d.stop,
+      take_profit: d.take_profit,
       position: "aboveBar",
       color: "red",
       shape: "arrowDown",
@@ -223,6 +228,105 @@ markers.forEach((item: any) => {
 });
 
 
+console.log("associations");
+console.log(associations);
+
+
+/** FAIRE APPARAITRE LE STOP SUIVEUR SUR LE GRAPHIQUE */
+/*
+const valueWithStop: any[] = values.filter((value: any) => value.stop_suiveur != null);
+console.log("valueWithStop", valueWithStop)
+const stopSuiveur = valueWithStop.map((d: any, i: any, arr: any[]) => {
+  return {time: d.time, value: d.stop_suiveur}
+})
+console.log("stopSuiveur", stopSuiveur)
+stopSuiveur.forEach((line: any, index: number) => {
+  const lineSeriesSL = chart.addLineSeries({ lastValueVisible: false, color: "red", lineWidth: 1, priceLineVisible: false});
+  lineSeriesSL.setData(line);
+})
+*/
+
+
+
+
+
+
+const linesTKandSL: any[]   = associations
+  .map((d: any) => {
+    const longDate  = new Date(d.long.time.year, d.long.time.month - 1, d.long.time.day);
+    const shortDate = new Date(d.short.time.year, d.short.time.month - 1, d.short.time.day);
+
+    let SL: any[] = [];
+    let TK: any[] = [];
+    if (longDate < shortDate) {
+      SL = [
+        {
+          time: d.long.time,
+          value: d.long.stop
+        },
+        {
+          time: d.short.time,
+          value: d.long.stop
+        },
+      ];
+      TK = [
+        {
+          time: d.long.time,
+          value: d.long.take_profit
+        },
+        {
+          time: d.short.time,
+          value: d.long.take_profit
+        },
+      ];
+    } else {
+      SL = [
+        {
+          time: d.short.time,
+          value: d.short.stop
+        },
+        {
+          time: d.long.time,
+          value: d.short.stop
+        },
+      ];
+      TK = [
+        {
+          time: d.short.time,
+          value: d.short.take_profit
+        },
+        {
+          time: d.long.time,
+          value: d.short.take_profit
+        },
+      ];
+    }
+
+    return {SL, TK};
+  });
+
+
+
+linesTKandSL.forEach((line: any, index: number) => {
+  const lineSeriesSL = chart.addLineSeries({ lastValueVisible: false, color: "red", lineWidth: 1, priceLineVisible: false});
+  lineSeriesSL.setData(line.SL);
+  const lineSeriesTK = chart.addLineSeries({ lastValueVisible: false, color: "green", lineWidth: 1, priceLineVisible: false});
+  lineSeriesTK.setData(line.TK);
+})
+
+/*
+var tldata = [];
+tldata.push({
+  time: values[values.length - 1000].time,
+  value: values[values.length - 1000].close
+});
+tldata.push({
+  time: values[values.length - 1].time,
+  value: values[values.length - 1].close
+});
+lineSeries.setData(tldata);
+*/
+
 
 const lines: any[]   = associations
   .map((d: any) => {
@@ -246,8 +350,7 @@ const lines: any[]   = associations
   })
   
   // Affichez les associations long/short
-  console.log("associations");
-  console.log(lines);
+  
   //////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////
@@ -296,33 +399,7 @@ const lines: any[]   = associations
 
 
 
-
-
-
-
-
-  //lineSeries.setData(lines[101]);
-
-  // Dessiner une ligne oblique
-  /*
-  const lineSeries = chart.addLineSeries({
-    lastValueVisible: false
-  });
-  const lineSeries1 = chart.addLineSeries({
-    lastValueVisible: false
-  });
-
-  var tldata = [];
-  tldata.push({
-    time: values[values.length - 1000].time,
-    value: values[values.length - 1000].close
-  });
-  tldata.push({
-    time: values[values.length - 1].time,
-    value: values[values.length - 1].close
-  });
-  lineSeries.setData(tldata);
-  */
+  
 
   chart.timeScale().setVisibleRange({
     from: values[0].time,
