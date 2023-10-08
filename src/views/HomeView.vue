@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+  import ChartTradingView from '../components/ChartTradingView.vue';
 </script>
 
 <template>
-  <TheWelcome />
+  <ChartTradingView></ChartTradingView>
 </template>
