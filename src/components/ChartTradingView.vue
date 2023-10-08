@@ -105,7 +105,9 @@ onMounted(async () => {
     wickUpColor: '#26a69a', wickDownColor: '#ef5350',
     priceLineVisible: false
   });
-  
+
+
+
   const sma_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
   const sma_data   = values
     .filter((d: any) => d.sma)
@@ -124,7 +126,21 @@ onMounted(async () => {
 
   // Afficher les valeurs sur le graphique
   candlestickSeries.setData(values);
-  candlestickSeries1.setData(values);
+
+    
+  
+  const three_line_break_data   = values
+    .filter((d: any) => d.three_line_break)
+    .map((d: any) => ({time: d.three_line_break.time, open: d.three_line_break.open, close: d.three_line_break.close, low: d.three_line_break.open, high: d.three_line_break.close}));
+  const three_line_break_data_forLine   = values
+    .filter((d: any) => d.three_line_break)
+    .map((d: any) => ({time: d.three_line_break.time, value: d.three_line_break.close}));
+  candlestickSeries1.setData(three_line_break_data);
+
+  const three_line_break_series = chart.addLineSeries({ color: "orange", lineWidth: 3, priceLineVisible: false});
+  three_line_break_series.setData(three_line_break_data_forLine);
+
+
 
 
   // S'abonner aux events du graphiques
