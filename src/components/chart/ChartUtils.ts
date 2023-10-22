@@ -17,11 +17,11 @@ export default class ChartUtils {
     }  
 
     static drawSupertrend = (chart: any, values: any) =>  {
-        const sma_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
+        const supertrend_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
         const sma_data   = values
-          .filter((d: any) => d.sma)
-          .map((d: any) => ({time: d.time, value: d.superTrend}));
-        sma_series.setData(sma_data);
+          .filter((d: any) => d.supertrend)
+          .map((d: any) => ({time: d.time, value: d.supertrend}));
+        supertrend_series.setData(sma_data);
     }  
 
     static drawEMA = (chart: any, values: any) =>  {

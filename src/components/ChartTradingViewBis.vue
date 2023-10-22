@@ -47,7 +47,7 @@ const props = defineProps({
 
 
 onMounted(async () => {
-  const stock_data: any = await axios.get("http://localhost:3000/data");
+  const stock_data: any = await axios.get("http://localhost:3000/supertrend");
   const values: any = stock_data.data;
 
   const timeScaleOptions = {
@@ -99,6 +99,7 @@ onMounted(async () => {
 
  
   ChartUtils.drawPrice(chart, values);
+  console.log(values)
   ChartUtils.drawSupertrend(chart, values);
 
 
