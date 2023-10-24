@@ -50,6 +50,8 @@ onMounted(async () => {
   const stock_data: any = await axios.get("http://localhost:3000/supertrend");
   const values: any = stock_data.data;
 
+  console.log(values)
+
   const timeScaleOptions = {
     rightOffset: 0, // Décalage à droite de l'échelle de temps
     barSpacing: 3,   // Espacement entre les barres de temps
@@ -99,8 +101,9 @@ onMounted(async () => {
 
  
   ChartUtils.drawPrice(chart, values);
-  console.log(values)
   ChartUtils.drawSupertrend(chart, values);
+  ChartUtils.drawDoubleEMA(chart, values);
+
 
 
   chart.timeScale().setVisibleRange({

@@ -31,6 +31,14 @@ export default class ChartUtils {
         .map((d: any) => ({time: d.time, value: d.ema}));
         ema_series.setData(ema_data);
     }  
+
+    static drawDoubleEMA = (chart: any, values: any) =>  {
+        const ema_series = chart.addLineSeries({ color: "purple", lineWidth: 2, priceLineVisible: false});
+        const dema_data   = values
+        .filter((d: any) => d.dema)
+        .map((d: any) => ({time: d.time, value: d.dema}));
+        ema_series.setData(dema_data);
+    }  
     
     static drawThreeLineBreakCandle = (chart: any, values: any) => {
         const candlestickSeries = chart.addCandlestickSeries({
