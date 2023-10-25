@@ -76,7 +76,7 @@ onMounted(async () => {
           horzLines: { color: '#444' },
       },
       timeScale: {
-        visible: false,
+        visible: true,
         borderVisible: false,
         borderColor: "#181C27"
       },
@@ -102,7 +102,11 @@ onMounted(async () => {
  
   ChartUtils.drawPrice(chart, values);
   ChartUtils.drawSupertrend(chart, values);
+  ChartUtils.drawSupertrendTrend(chart1, values);
+  ChartUtils.drawConditionShortOrLongOk(chart1, values);
   ChartUtils.drawDoubleEMA(chart, values);
+  ChartUtils.synchronizeMovements(chart, chart1);
+
 
 
 

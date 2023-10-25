@@ -20,9 +20,40 @@ export default class ChartUtils {
         const supertrend_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
         const sma_data   = values
           .filter((d: any) => d.supertrend)
-          .map((d: any) => ({time: d.time, value: d.supertrend}));
+          .map((d: any) => ({time: d.time, value: d.supertrend.value}));
         supertrend_series.setData(sma_data);
     }  
+
+    static drawSupertrendTrend = (chart: any, values: any) =>  {
+        const supertrend_series = chart.addLineSeries({ color: "red", lineWidth: 2, priceLineVisible: false});
+        let sma_data   = values
+          .filter((d: any) => d.supertrend)
+          .map((d: any) => ({time: d.time, value: d.supertrend.trend != "" ? d.supertrend.trend : 0}));
+
+        const diff = values.length - sma_data.length;
+        const emptyArray: any[] = [...new Array(diff)].map(d => {});
+
+        for (let i = 0; i < emptyArray.length; i++) {
+            emptyArray[i] = {
+                time: values[i].time,
+                supertrend: {
+                    trend: 0,
+                    value: 0
+                }
+            }
+        }
+        sma_data = [...emptyArray, ...sma_data];
+        supertrend_series.setData(sma_data);
+    } 
+
+    static drawConditionShortOrLongOk = (chart: any, values: any) =>  {
+        const condition_series = chart.addLineSeries({ color: "green", lineWidth: 2, priceLineVisible: false});
+        const conditionOkLine   = values
+          .filter((d: any) => d.supertrend)
+          .map((d: any) => ({time: d.time, value: d.longConditionOk == true ? 1 : d.shortConditionOk == true ? -1 : 0}));
+
+        condition_series.setData(conditionOkLine);
+    } 
 
     static drawEMA = (chart: any, values: any) =>  {
         const ema_series = chart.addLineSeries({ color: "green", lineWidth: 2, priceLineVisible: false});
