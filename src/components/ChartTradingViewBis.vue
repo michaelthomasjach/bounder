@@ -100,11 +100,13 @@ onMounted(async () => {
   //chart.setXAxisVisible(false);
 
  
-  ChartUtils.drawPrice(chart, values);
+  const series = ChartUtils.drawPrice(chart, values);
   ChartUtils.drawSupertrend(chart, values);
   ChartUtils.drawSupertrendTrend(chart1, values);
   ChartUtils.drawConditionShortOrLongOk(chart1, values);
   ChartUtils.drawDoubleEMA(chart, values);
+  ChartUtils.drawMarkers(series, values);
+
   ChartUtils.synchronizeMovements(chart, chart1);
 
 

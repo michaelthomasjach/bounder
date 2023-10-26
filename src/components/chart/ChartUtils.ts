@@ -6,6 +6,7 @@ export default class ChartUtils {
             priceLineVisible: false
         });
         candlestickSeries.setData(values);
+        return candlestickSeries;
     }
 
     static drawSMA = (chart: any, values: any) =>  {
@@ -69,6 +70,36 @@ export default class ChartUtils {
         .filter((d: any) => d.dema)
         .map((d: any) => ({time: d.time, value: d.dema}));
         ema_series.setData(dema_data);
+    }  
+
+    static drawMarkers = (series: any, values: any) =>  {
+        const markers: any[] = values
+        .filter((d: any) => d.longConditionOk || d.shortConditionOk)
+        .map((d: any, i: number) => {
+            const marker = d.longConditionOk
+            ? {
+            time: d.time,
+            close: d.close,
+            position: "belowBar",
+            color: "green",
+            shape: "arrowUp",
+            text: "LONG @ " + i,// + Math.floor(d.low),
+            id: i,
+            type: "long"
+            }
+            : {
+            time: d.time,
+            close: d.close,
+            position: "aboveBar",
+            color: "red",
+            shape: "arrowDown",
+            text: "SHORT @ " + i,// + Math.floor(d.high),
+            id: i,
+            type: "short"
+            }
+            return marker;
+        });
+        series.setMarkers(markers);
     }  
     
     static drawThreeLineBreakCandle = (chart: any, values: any) => {
