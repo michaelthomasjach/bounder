@@ -7,7 +7,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import { createChart } from 'lightweight-charts';
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from 'axios';
+
 import ChartUtils from "./chart/ChartUtils.ts";
 
 let chart: any;
@@ -21,6 +22,22 @@ const props = defineProps({
   type: {
     type: String,
     default: 'line',
+  },
+  symbol: {
+    type: String,
+    default: "APPL"
+  },
+  from: {
+    type: String,
+    default: "2012-01-01"
+  },
+  to: {
+    type: String,
+    default: "2012-12-31"
+  },
+  period: {
+    type: String,
+    default: "d"
   },
   data: {
     type: Array,
@@ -45,9 +62,10 @@ const props = defineProps({
 });
 
 
+onMounted(async () => {    
+  console.log(props.symbol)
+  const stock_data: any = await axios.get(`http://localhost:3000/supertrend/${props.symbol}/${props.period}/${props.from}/${props.to}`);
 
-onMounted(async () => {
-  const stock_data: any = await axios.get("http://localhost:3000/supertrend");
   const values: any = stock_data.data;
 
   console.log(values)

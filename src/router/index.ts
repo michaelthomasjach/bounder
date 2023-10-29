@@ -11,10 +11,24 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/supertrend',
+      path: '/supertrend/:symbol/:period/:from/:to',
       name: 'supertrend',
-      component: SuperTrendViewVue
-    },
+      component: SuperTrendViewVue,
+      /*
+      props: (route: any) => {
+        console.log('HELKLO')
+        console.log(route.query.symbol);
+
+        return ({ 
+          symbol: route.query.symbol,
+          period: route.query.period,
+          from: route.query.from,
+          to: route.query.to,
+        });
+      },
+      */
+      props: true
+    }
   ]
 })
 
